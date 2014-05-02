@@ -1,0 +1,245 @@
+/*
+ * CIP Reporting API Client Application
+ *
+ * Copyright (c) 2013 CIP Reporting
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the above copyright notice and this paragraph are
+ * duplicated in all such forms and that any documentation,
+ * advertising materials, and other materials related to such
+ * distribution and use acknowledge that the software was developed
+ * by CIP Reporting.  The name of CIP Reporting may not be used to 
+ * endorse or promote products derived from this software without 
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+body {
+  padding-bottom: 10px;
+  overflow-y: hidden;
+  padding-top: 50px;
+}
+
+.navbar {
+  background-image: url(logo_mono_grey_thin.png);
+  background-position: 8px 8px;
+  background-repeat: no-repeat;
+  margin-bottom: 0px;
+  padding-left: 30px;
+}
+
+h1.view-description {
+  position: absolute; 
+  text-align: center;
+  color: white;
+  width: 100%;
+  top: -13px;
+  left: 0px;
+}
+
+/****************************
+ ** Loading...
+ ***************************/
+div.initializing img {
+  display: block; 
+  margin: 0 auto;
+}
+
+div.initializing p.lead {
+  margin-top: 20px;
+  text-align: center;
+}
+ 
+ /****************************
+ ** login.js
+ ***************************/
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.form-signin .form-signin-heading, .form-signin .checkbox {
+  margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+  font-weight: normal;
+}
+
+.form-signin .form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.form-signin input#form-signin-user {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/****************************
+ ** main.tworow.js
+ ***************************/
+div.tworow {
+  width: 1880px;
+  margin: 0px auto;
+}
+
+div.tworow div.tworow-map {
+  height: 470px;
+  width: 600px;
+  border: 1px solid black;
+}
+
+div.tworow div.tworow-photo {
+  float: left;
+  height: 470px;
+  width: 600px;
+  border: 1px solid black;
+  position: relative;
+  margin-right: 30px;
+}
+
+div.tworow div.row div.col-lg-8 > div {
+  display: none;
+}
+
+div.tworow div.row div.col-lg-8 > div.active {
+  display: block;
+}
+
+div.tworow div.textarea {
+  font-size: 2em;
+  width: 610px;
+  height: 470px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+div.tworow div.textarea h2 {
+  font-size: 1.8em;
+}
+
+div.tworow div.row {
+  margin-top: 30px;
+}
+
+/****************************
+ ** main.fourcolumn.js
+ ***************************/
+div.fourcolumn {
+  width: 1880px;
+  margin: 0px auto;
+}
+
+div.fourcolumn div#fourcolumn-columns > div {
+  display: none;
+}
+
+div.fourcolumn div#fourcolumn-columns > div.active {
+  display: block;
+}
+
+div.fourcolumn div.fourcolumn-photo {
+  width: 450px;
+  height: 512px;
+  border: 1px solid black;
+  margin: 10px auto;
+  position: relative;
+}
+
+div.fourcolumn div.fourcolumn-content {
+  width: 450px;
+  margin: 0 auto;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+div.fourcolumn div.fourcolumn-content h2 {
+  margin: 0px 0px 5px 0px;
+}
+
+div.fourcolumn div.fourcolumn-map {
+  width: 450px;
+  height: 256px;
+  margin: 10px auto 0px auto !important;
+  border: 1px solid black;
+}
+
+/****************************
+ ** main.single.js
+ ***************************/
+div.single {
+  width: 1880px;
+  margin: 0px auto;
+}
+
+div.single div.row {
+  margin-top: 30px;
+}
+
+div.single div.row div#single-data-row > div {
+  display: none;
+}
+
+div.single div.row div#single-data-row > div.active {
+  display: block;
+}
+
+div.single div.hidden-text {
+  display: none;
+}
+
+div.single div.single-photo {
+  width: 925px;
+  height: 970px;
+  border: 1px solid black;
+  position: relative;
+}
+
+div.single div.single-text {
+  font-size: 2em;
+  width: 925px;
+  height: 485px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+div.single div.single-text h2 {
+  font-size: 2.2em;
+  margin: 0px 0px 5px 0px;
+}
+
+div.single div.single-map {
+  width: 925px;
+  height: 485px;
+  border: 1px solid black;
+}
