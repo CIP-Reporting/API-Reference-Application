@@ -21,6 +21,9 @@
  *
  */
 
+ // Avoid warnings
+ date_default_timezone_set('America/New_York'); 
+ 
 /**
  * Show help and exit with optional error message
  * @param string $err Error message
@@ -117,6 +120,55 @@ function extractMetaTagContent($file, $tag) {
   return false;
 }
 
+/**
+ * Prompt the user for confirmation
+ * @param string $message Confirmation message
+ */
+function confirmAction($message = false)
+{
+  if ($message == false) $message = "Are you sure you want to do this [y/N]";
+
+  echo $message;
+  flush();
+
+  $confirmation = trim(fgets(STDIN));
+  
+  return strlen($confirmation) == 1 && strtolower($confirmation[0]) == 'y';
+}
+
+/**
+ * Return an array of files within a directory including files that start with (.).
+ * @param string $dir Path to directory
+ */
+function getDirectoryContents($dir)
+{ 
+  $files = Array();
+  
+  if (!($res = opendir($dir))) return $files;
+  
+  while (($file = readdir($res)) == true)
+  {
+    if ($file == '.' ||  $file == '..' || $file == '.git') continue;
+    array_push($files, "$dir\\$file");
+  }
+      
+  closedir($res); 
+  return $files; 
+}
+
+/**
+ * Recursively clean up a directory, optionally leaving the initial directory in place
+ * @param string $dir Path to directory
+ * @param boolean $rmdir Remove directory
+ */
+function recursiveCleanup($dir, $rmdir = false)
+{
+  if($objs = getDirectoryContents($dir))
+    foreach ($objs as $obj) is_dir($obj) ? recursiveCleanup($obj, true) : unlink($obj);
+
+  if ($rmdir) rmdir($dir);
+}
+
 if ($argc !== 3) {
   showHelp("Invalid argument count");
 }
@@ -140,7 +192,12 @@ if (!is_dir($dstDir)) {
 $dstDir .= "\\{$argv[1]}";
 
 if (file_exists($dstDir)) {
-  showHelp("The specified application is already packaged in the destination location: $dstDir");
+  echo "\nThe specified application is already packaged in the destination location:\n\n  $dstDir\n\n";
+  if (!confirmAction()) exit;
+
+  echo "\nRemoving existing files... ";
+  recursiveCleanup($dstDir);
+  echo "[done]\n";
 }
 
 $version = `svnversion`;
@@ -184,9 +241,12 @@ echo "Root Dir: $rootDir\n";
 echo "Appl Dir: $appDir\n";
 echo "Dest Dir: $dstDir\n\n";
 
-echo "Creating destination folder... ";
-mkdir ($dstDir);
-echo "[done]\n";
+if (!file_exists($dstDir))
+{
+  echo "Creating destination folder... ";
+  mkdir ($dstDir);
+  echo "[done]\n";
+}
 
 echo "Copying CIPAPI... ";
 xcopy("$rootDir\\CIPAPI", "$dstDir\\CIPAPI");
@@ -204,8 +264,8 @@ echo "Copying index.html... ";
 xcopy("$dstDir\\app\\index.html", "$dstDir\\index.html");
 echo "[done]\n";
 
-echo "Copying README... ";
-xcopy("$dstDir\\app\\README", "$dstDir\\README");
+echo "Copying README.md... ";
+xcopy("$dstDir\\app\\README.md", "$dstDir\\README.md");
 echo "[done]\n";
 
 echo "Copying LICENSE... ";
@@ -225,8 +285,8 @@ if (file_exists("$dstDir\\app\\index.html")) {
   unlink("$dstDir\\app\\index.html");
 }
 
-if (file_exists("$dstDir\\app\\README")) {
-  unlink("$dstDir\\app\\README");
+if (file_exists("$dstDir\\app\\README.md")) {
+  unlink("$dstDir\\app\\README.md");
 }
 
 if (file_exists("$dstDir\\app\\{$argv[1]}-config-pack.xml")) {
