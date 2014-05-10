@@ -182,7 +182,8 @@
           url: url,
           success: function(response) {
             // Inject data from the outer search results
-            response.data.item[0].data.distance = info.data.item[offset].data.distance;
+            var distance = parseInt(info.data.item[offset].data.distance, 10);
+            response.data.item[0].data.distance = distance < 0 || distance > 12500 ? 'Unknown' : distance;
             response.data.item[0].data.reports = info.data.item[offset].data.reports;
             renderNode(offset, response, node);
             

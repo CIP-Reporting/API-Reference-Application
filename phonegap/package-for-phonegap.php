@@ -295,8 +295,9 @@ if (file_exists("$dstDir\\app\\{$argv[1]}-config-pack.xml")) {
 echo "[done]\n";
 
 echo "Fixing paths... ";
-replaceInFile("$dstDir\\index.html", '"./', '"./app/');
-replaceInFile("$dstDir\\index.html", '"../../', '"./');
+replaceInFile("$dstDir\\index.html", '"./',          '"./app/');
+replaceInFile("$dstDir\\index.html", '"../../',      '"./');
+replaceInFile("$dstDir\\CIPAPI\\components\\map.js", '"../../', '"./');
 echo "[done]\n";
 
 echo "Configuring Phonegap build... ";
