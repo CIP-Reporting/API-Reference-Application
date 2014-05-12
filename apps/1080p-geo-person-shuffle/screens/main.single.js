@@ -29,6 +29,9 @@
   // Global map references
   CIPAPI.main.single.map = null;
   
+  // Actual number of real items rendered  
+  CIPAPI.main.single.items = 0;
+
   // Unbind any globals for memory cleanup
   $(document).on('cipapi-unbind-main', function(event, info) {
     log.debug("Cleaning up maps");
@@ -65,6 +68,8 @@
   $(document).on('cipapi-update-main-prev', function() { showPrev(); });
 
   function showNext() {
+    if (CIPAPI.main.single.items == 1) return; // Nothing to cycle
+    
     $('div.single div#single-data-row div.active').each(function() {
       var active = $(this);
       var next = active.next();
@@ -82,6 +87,8 @@
   }
   
   function showPrev() {
+    if (CIPAPI.main.single.items == 1) return; // Nothing to cycle
+    
     $('div.single div#single-data-row div.active').each(function() {
       var active = $(this);
       var prev = active.prev();
@@ -184,6 +191,15 @@
             // Inject data from the outer search results
             var distance = parseInt(info.data.item[offset].data.distance, 10);
             response.data.item[0].data.distance = distance < 0 || distance > 12500 ? 'Unknown' : distance;
+            
+            if (parseInt(response.data.item[0].data.weight, 10) > 0) {
+              response.data.item[0].data.weight += ' Lbs';
+            }
+            
+            if (response.data.item[0].data.race == 'Unknown') {
+              response.data.item[0].data.race = '';
+            }
+            
             response.data.item[0].data.reports = info.data.item[offset].data.reports;
             renderNode(offset, response, node);
             
@@ -197,8 +213,9 @@
     }
     
     // Kick off the actual initialization
-    log.debug('Number of items: ' + info.data.item.length);
-    for (var i=0; i<info.data.item.length; i++) {
+    CIPAPI.main.single.items = info.data.item.length;
+    log.debug('Number of items: ' + CIPAPI.main.single.items);
+    for (var i=0; i<CIPAPI.main.single.items; i++) {
       // Put an ordered sequential place holder in to hold the future content (comes back out of order usually)
       $('div.single #single-data-row').append('<div id="column_item_' + i + '"' + (i == 0 ? ' class="active" ' : ' ') +
           'data-loaded="false" ' +

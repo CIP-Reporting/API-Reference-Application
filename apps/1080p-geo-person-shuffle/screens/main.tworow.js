@@ -29,6 +29,9 @@
   // Global map references
   CIPAPI.main.tworow.map0 = null;
   CIPAPI.main.tworow.map1 = null;
+
+  // Actual number of real rows rendered  
+  CIPAPI.main.tworow.rows = 0;
   
   // Unbind any globals for memory cleanup
   $(document).on('cipapi-unbind-main', function(event, info) {
@@ -72,6 +75,8 @@
   $(document).on('cipapi-update-main-prev', function() { showPrev(); });
 
   function showNext() {
+    if (CIPAPI.main.tworow.rows == 2) return; // Nothing to cyle
+    
     $('div.tworow div.active').each(function() {
       var active = $(this);
       var next = active.next();
@@ -89,6 +94,8 @@
   }
   
   function showPrev() {
+    if (CIPAPI.main.tworow.rows == 2) return; // Nothing to cyle
+    
     $('div.tworow div.active').each(function() {
       var active = $(this);
       var prev = active.prev();
@@ -216,6 +223,15 @@
             // Inject data from the outer search results
             var distance = parseInt(info.data.item[offset].data.distance, 10);
             response.data.item[0].data.distance = distance < 0 || distance > 12500 ? 'Unknown' : distance;
+            
+            if (parseInt(response.data.item[0].data.weight, 10) > 0) {
+              response.data.item[0].data.weight += ' Lbs';
+            }
+            
+            if (response.data.item[0].data.race == 'Unknown') {
+              response.data.item[0].data.race = '';
+            }
+            
             response.data.item[0].data.reports = info.data.item[offset].data.reports;
             renderRow(offset, response, bestNode);
             
@@ -229,8 +245,9 @@
     }
     
     // Kick off the actual initialization
-    log.debug('Number of items: ' + info.data.item.length);
-    for (var i=0; i<info.data.item.length; i++) {
+    CIPAPI.main.tworow.rows = info.data.item.length - (info.data.item.length % 2);
+    log.debug('Number of items: ' + CIPAPI.main.tworow.rows);
+    for (var i=0; i<CIPAPI.main.tworow.rows; i++) {
       // Put an ordered sequential place holder in to hold the future content (comes back out of order usually)
       $('#tworow-row-' + (i & 1)).append('<div id="column_item_' + i + '"' + (i < 2 ? ' class="active" ' : ' ') +
           'data-loaded="false" ' +

@@ -32,6 +32,9 @@
   CIPAPI.main.fourcolumn.map2 = null;
   CIPAPI.main.fourcolumn.map3 = null;
 
+  // Actual number of real columns rendered  
+  CIPAPI.main.fourcolumn.cols = 0;
+  
   // Unbind any globals for memory cleanup
   $(document).on('cipapi-unbind-main', function(event, info) {
     log.debug("Cleaning up maps");
@@ -84,6 +87,8 @@
   $(document).on('cipapi-update-main-prev', function() { showPrev(); });
 
   function showNext() {
+    if (CIPAPI.main.fourcolumn.cols == 4) return; // Nothing to cycle
+    
     $('div#fourcolumn-columns div.active').each(function() {
       var active = $(this);
       var next = active.next();
@@ -101,6 +106,8 @@
   }
   
   function showPrev() {
+    if (CIPAPI.main.fourcolumn.cols == 4) return; // Nothing to cycle
+    
     $('div#fourcolumn-columns div.active').each(function() {
       var active = $(this);
       var prev = active.prev();
@@ -217,6 +224,15 @@
             // Inject data from the outer search results
             var distance = parseInt(info.data.item[offset].data.distance, 10);
             response.data.item[0].data.distance = distance < 0 || distance > 12500 ? 'Unknown' : distance;
+            
+            if (parseInt(response.data.item[0].data.weight, 10) > 0) {
+              response.data.item[0].data.weight += ' Lbs';
+            }
+            
+            if (response.data.item[0].data.race == 'Unknown') {
+              response.data.item[0].data.race = '';
+            }
+
             response.data.item[0].data.reports = info.data.item[offset].data.reports;
             renderColumn(offset, response, node);
             
@@ -230,10 +246,11 @@
     }
     
     // Kick off the actual initialization
-    log.debug('Number of items: ' + info.data.item.length);
+    CIPAPI.main.fourcolumn.cols = info.data.item.length - (info.data.item.length % 4);
+    log.debug('Number of items: ' + CIPAPI.main.fourcolumn.cols);
     var theRow = null;
     var numRows = 0; var colNum = 0;
-    for (var i=0; i<info.data.item.length; i++) {
+    for (var i=0; i<CIPAPI.main.fourcolumn.cols; i++) {
       // Lazy initialize the row
       if (theRow === null) {
         theRow = $('<div class="row' + (i == 0 ? ' active' : '') + '"></div>');

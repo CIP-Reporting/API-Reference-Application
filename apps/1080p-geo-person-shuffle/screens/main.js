@@ -247,6 +247,15 @@
         $(document).trigger('cipapi-unbind-main');
         $('div#main-content-area > *').remove();
 
+        // Make sure the layout is appropriate for the data length
+        if ( (layout == 'single'     && response.data.item.length < 1) ||
+             (layout == 'tworow'     && response.data.item.length < 2) ||
+             (layout == 'fourcolumn' && response.data.item.length < 4) ) {
+          log.debug("Layout cipapi-update-main-" + layout + " requires more columns than are available (" + response.data.item.length + ") - Shuffling");
+          $('a#shuffle-view-layout').click();
+          return;
+        }
+        
         // Fire it off to the renderer
         log.debug("Rendering view: cipapi-update-main-" + layout);
         $(document).trigger('cipapi-update-main-' + layout, response);

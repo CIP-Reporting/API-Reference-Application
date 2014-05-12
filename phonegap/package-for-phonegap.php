@@ -200,9 +200,9 @@ if (file_exists($dstDir)) {
   echo "[done]\n";
 }
 
-$version = `svnversion`;
-if (null === $version) {
-  showHelp("Unable to extract SVN version number");
+$version = (int)`svnversion`;
+if ($version == 0) {
+  showHelp("Unable to extract SVN version number - you should run this script from the root of the reference application");
 }
 $version = '1.' . preg_replace("/\\D/", '', $version);
 
