@@ -66,7 +66,9 @@
     var size = new OpenLayers.Size(21, 25);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
     var icon = new OpenLayers.Icon("../../lib/OpenLayers/img/marker-green.png", size, offset);
-    markerLayer.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(CIPAPI.settings.LONGITUDEDEF, CIPAPI.settings.LATITUDEDEF).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), icon));
+    if (CIPAPI.settings.LONGITUDEDEF != '' && CIPAPI.settings.LATITUDEDEF != '') {
+      markerLayer.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(CIPAPI.settings.LONGITUDEDEF, CIPAPI.settings.LATITUDEDEF).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), icon));
+    }
     
     return {
       // Move the movable marker around
@@ -92,6 +94,48 @@
         
         // Zoom the bounds to 1.2 (120%) of the size to ensure markers are always visible
         map.zoomToExtent(markerLayer.getDataExtent().scale(1.2)); // Zoom all purdy...
+        
+        return movableMarker;
+      },
+      
+      // Create a stationary marker
+      setMarker: function(latitude, longitude, hoverhtml) {
+        // Make sure we have a valid map
+        if (map === null) {
+          return;
+        }
+        
+        log.debug("Creating marker at latitude: " + latitude + ", longitude: " + longitude);
+        
+        // Place the new marker
+        var size = new OpenLayers.Size(21, 25);
+        var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+        var icon = new OpenLayers.Icon("../../lib/OpenLayers/img/marker-gold.png", size, offset);
+        var newMarker = new OpenLayers.Marker(new OpenLayers.LonLat(longitude, latitude).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")), icon)
+        markerLayer.addMarker(newMarker);
+        
+        // Place hover marker if specified        
+        if (typeof hoverhtml == 'string') {        
+          var popup = null;
+          newMarker.events.register('mouseover', newMarker, function(evt) {
+            popup = new OpenLayers.Popup.FramedCloud("Popup",
+              new OpenLayers.LonLat(longitude, latitude).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
+              null,
+              '<div class="openlayerhover">' + hoverhtml + '</div>',
+              null,
+              false
+            );
+          
+            map.addPopup(popup);
+          });
+
+          newMarker.events.register('mouseout', newMarker, function(evt) {popup.hide();});
+        }        
+        
+        // Zoom the bounds to 1.2 (120%) of the size to ensure markers are always visible
+        map.zoomToExtent(markerLayer.getDataExtent().scale(1.2)); // Zoom all purdy...
+        
+        return newMarker;
       },
       
       // Clean up ... Clean up ... Everybody Clean Up!

@@ -309,4 +309,22 @@ replaceInFile("$dstDir\\config.xml", '[APPAUTHOR]',  $author);
 replaceInFile("$dstDir\\config.xml", '[APPVERSION]', $version);
 echo "[done]\n";
 
+echo "\nCleaning lib folder of unnecessary items\n";
 
+$indexContents = file_get_contents("$dstDir\\index.html");
+$availableLibs = getDirectoryContents("$dstDir\\lib");
+foreach ($availableLibs as $availableLib) {
+  $baseName = basename($availableLib);
+  if (!preg_match("/<(script|link).*?$baseName/", $indexContents)) {
+    if (is_dir($availableLib)) {
+      echo "  -> Removing directory $baseName... ";
+      recursiveCleanup($availableLib, true);
+    } else {
+      echo "  -> Removing file $baseName... ";
+      unlink($availableLib);
+    }
+    echo "[done]\n";
+  }
+}
+
+echo "\nSUCCESS\n";

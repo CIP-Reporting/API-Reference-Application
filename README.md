@@ -58,3 +58,15 @@ The application presents a simple user interface that works on
 both desktop and mobile devices.  The user interface gives a
 button menu to select which form to write.  Most all fields 
 within CIP Reporting are supported over the API forms engine.
+
+### object-mapping-widget
+
+This is an embeddable HTML5 web application designed to be
+embedded into an iFrame application page within CIP Reporting.
+This external application can be used to display a map and place
+markers which can be clicked by the user to perform actions.
+
+A typical application for this would be to display markers on a
+map representing where incidents occurred or where objects exist.
+These markers can then be clicked by the user to expand into more
+information.

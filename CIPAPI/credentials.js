@@ -77,5 +77,12 @@
     $(document).trigger('cipapi-credentials-reset');
   }
   
+  // Allow external scripts to pre-load API credentials to be used upon init
+  CIPAPI.credentials.preload = function(credentials) {
+    host = credentials.host;
+    user = credentials.user;
+    pass = credentials.pass;
+  }
+  
 })(window);
 

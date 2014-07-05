@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <!--
-     - 1080p Geo-spatial Person Shuffle
+     - Object Mapping Widget
      -
      - Copyright (c) 2013 CIP Reporting
      - All rights reserved.
@@ -25,12 +25,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="name" content="Person Shuffle">
-    <meta name="description" content="1080p Geo-spatial Person Shuffle">
+    <meta name="name" content="Object Mapping Widget">
+    <meta name="description" content="Object Mapping Widget">
     <meta name="author" content="Jason Riffel">
     <meta name="email" content="jriffel@cipreporting.com">
 
-    <title>1080p Geo-spatial Person Shuffle</title>
+    <title>Object Mapping Widget</title>
 
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
@@ -39,7 +39,7 @@
     <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="./style.css" rel="stylesheet">
     <link href="./customize/css/custom.css" rel="stylesheet">
-    
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -93,14 +93,10 @@
 
     <!-- CIP UI Components -->
     <script src="../../CIPAPI/screens/login.js"></script>
-    <script src="../../CIPAPI/screens/logout.js"></script>
     <script src="../../CIPAPI/components/map.js"></script>
 
     <!-- Application Screens -->
     <script src="./screens/main.js"></script>
-    <script src="./screens/main.single.js"></script>
-    <script src="./screens/main.tworow.js"></script>
-    <script src="./screens/main.fourcolumn.js"></script>
 
     <!-- Customer Provided -->
     <script src="./customize/js/custom.js"></script>
@@ -109,31 +105,10 @@
     <script type="text/javascript">
       // Default Configurations - which can be overriden by an integration
       CIPAPI.config.setDefaults({
-           overrideIntegration: '1080p-geo-person-shuffle-cfg', // Name of integration to request for configuration override / merge
-        reloadSettingsInterval: 'cipapi-timing-5min',           // How often to reload settings from the server
-              reloadMeInterval: 'cipapi-timing-5min',           // How often to reload the current user info from the server
-          reloadConfigInterval: 'cipapi-timing-5min',           // How often to reload the configuration override from the server
-          firstShuffleInterval: 'cipapi-timing-5sec',           // How long to wait on the main screen to start the shuffle
-               shuffleInterval: 'cipapi-timing-5min',           // How often to shuffle the view and layout
-                singleInterval: 'cipapi-timing-5sec',           // How often to rotate the single layout
-                twoRowInterval: 'cipapi-timing-10sec',          // How often to rotate the two row layout
-            fourColumnInterval: 'cipapi-timing-15sec',          // How often to rotate the four column layout
-             visualEasingTimer: 750,                            // Easing speed for animations
-                  visualEaseIn: 'easeInQuint',                  // Easing in function
-                 visualEaseOut: 'easeOutQuint',                 // Easing out function
-              availableLayouts: {                               // Aviailable layouts - they key is important!
-                      single: "Single", 
-                      tworow: "Two Rows", 
-                  fourcolumn: "Four Columns",
-             },
-             fieldRenderingMap: [                               // How to render person information
-                'Demographics: %(gender)s %(race)s %(height)s %(weight)s',
-                'Distance: %(distance)s Miles',
-                'DOB: %(date_of_birth)s (%(age)s Years Old)',
-                'Eye Color: %(eye_color)s',
-                'Hair Color: %(hair_color)s',
-                'Notes: %(comments)s'
-        ]
+           overrideIntegration: 'object-mapping-widget-cfg', // Name of integration to request for configuration override / merge
+        reloadSettingsInterval: 'cipapi-timing-5min',        // How often to reload settings from the server
+              reloadMeInterval: 'cipapi-timing-5min',        // How often to reload the current user info from the server
+          reloadConfigInterval: 'cipapi-timing-5min'         // How often to reload the configuration override from the server
       });
       
       $(document).ready(function() { $(document).trigger('cipapi-init'); });
