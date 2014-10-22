@@ -38,6 +38,20 @@ itself and the API library.
 
 ## Reference Applications
 
+### cip-reporting-mobile-application
+
+This is an Adobe Phonegap based mobile application which can query
+the API of a CIP Reporting server for a list of reports or forms
+which can be authored by the current user credentials.
+
+The mobile application fetches all known form definitions from the
+CIP Reporting server and is capable of authoring reports offline.
+When a connection is available the reports which have been written
+will be submitted in the background with notifications.
+
+The mobile application makes use of Phonegap features such as
+GPS location and direct camera access.
+
 ### 1080p-geo-person-shuffle
 
 This is a stand-alone HTML5 web application which can query 
@@ -70,3 +84,17 @@ A typical application for this would be to display markers on a
 map representing where incidents occurred or where objects exist.
 These markers can then be clicked by the user to expand into more
 information.
+
+### repeating-log-writer-widget
+
+This is an embeddable HTML5 web application designed to be
+embedded into an iFrame application page within CIP Reporting.
+This external application can be used to create and save batches
+of simple log entries for bulk data entry.
+
+A theoretical application for this widget could assume you need to
+have a unique log entry for every person working on a certain shift.
+If you had more than say 10 people working on a shift entering the
+log entries could be very time consuming.  This widget could be used
+to enter the employee names in a single batch and submit them all at
+once.  The system will generate log entries for each of the names.

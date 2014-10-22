@@ -32,13 +32,16 @@
 
     <title>Mobile Integration Report Writer</title>
 
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="../../res/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../../res/favicon.ico" type="image/x-icon" />
 
     <!-- Bootstrap CSS, then CIP, then customer provided -->
     <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../../lib/summernote/dist/summernote.css" />
     <link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" media="all" type="text/css" href="../../lib/jquery-ui/jquery-ui.structure.css" />
+		<link rel="stylesheet" media="all" type="text/css" href="../../lib/jquery-ui/jquery-ui.theme.css" />
+		<link rel="stylesheet" media="all" type="text/css" href="../../lib/jquery-ui-timepicker/jquery-ui-timepicker-addon.css" />
     <link href="./style.css" rel="stylesheet">
     <link href="./customize/css/custom.css" rel="stylesheet">
 
@@ -52,8 +55,8 @@
   <body>
     <div id="container">
       <div class="initializing">
-        <img src="./logo_mono_blue_thin.png" />
-        <img src="./progress-bar.gif" />
+        <img src="../../res/logo_mono_blue_thin.png" />
+        <img src="../../res/progress-bar.gif" />
         <p class="lead">Please wait, Initializing...</p>
       </div>
     </div>
@@ -62,14 +65,15 @@
     <script src="../../lib/jquery-2.0.3.js"></script>
     <script src="../../lib/jsonform-bootstrap3/deps/underscore.js"></script>
     <script src="../../lib/jsonform-bootstrap3/deps/opt/jsv.js"></script>
-    <script src="../../lib/jquery-ui.js"></script>
+		<script src="../../lib/jquery-ui-1.11.2/jquery-ui.min.js"></script>
+		<script src="../../lib/jquery-ui-timepicker/jquery-ui-timepicker-addon.js"></script>
+		<script src="../../lib/jquery-ui-timepicker/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
     <script src="../../lib/jquery.actual.js"></script>
     <script src="../../lib/jquery.image-scale.js"></script>
     <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="../../lib/bootbox.min.js"></script>
     <script src="../../lib/holder.js"></script>
     <script src="../../lib/sprintf.js"></script>
-    <script src="../../lib/date.js"></script>
     <script src="../../lib/log4javascript/log4javascript.js"></script>
     <script src="../../lib/jsonform-bootstrap3/lib/jsonform.js"></script>
     <script src="../../lib/summernote/dist/summernote.js"></script>
@@ -92,6 +96,7 @@
     <script src="../../CIPAPI/credentials.js"></script>
     <script src="../../CIPAPI/config.js"></script>
     <script src="../../CIPAPI/router.js"></script>
+    <script src="../../CIPAPI/stats.js"></script>
     <script src="../../CIPAPI/rest.js"></script>
     <script src="../../CIPAPI/timing.js"></script>
     <script src="../../CIPAPI/settings.js"></script>
@@ -111,6 +116,7 @@
     <script type="text/javascript">
       // Default Configurations - which can be overriden by an integration
       CIPAPI.config.setDefaults({
+            applicationVersion: '[APPVERSION]',                     // Set by the packaging script to know our own version
            overrideIntegration: 'mobile-integration-report-writer', // Name of integration to request for configuration override / merge
         reloadSettingsInterval: 'cipapi-timing-5min',               // How often to reload settings from the server
               reloadMeInterval: 'cipapi-timing-5min',               // How often to reload the current user info from the server

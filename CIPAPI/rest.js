@@ -25,12 +25,20 @@
 
   var log = log4javascript.getLogger("CIPAPI.rest");
 
-  // Encode the basic auth header
-  function encodeBasicAuth(user, password) {
-    var tok = user + ':' + password;
-    var hash = btoa(tok);
-    return "Basic " + hash;
-  }
+  var numTransactions = 0;
+  
+  // Statistics
+  var statsGroup = 'API Transactions';
+  CIPAPI.stats.total(statsGroup, 'Total GET',        0);
+  CIPAPI.stats.total(statsGroup, 'Total POST',       0);
+  CIPAPI.stats.total(statsGroup, 'Total PUT',        0);
+  CIPAPI.stats.total(statsGroup, 'Total DELETE',     0);
+  CIPAPI.stats.total(statsGroup, 'Total Errors',     0);
+  CIPAPI.stats.total(statsGroup, 'Last Transaction', 'Never');
+
+  $(document).on('cipapi-stats-fetch', function() {
+    CIPAPI.stats.total(statsGroup, 'Total Pending', numTransactions);
+  });
 
   // Iterate known API parameters and compose the query string
   function encodeApiParameters(opts) {
@@ -54,8 +62,8 @@
   // Shared error handler for rest requests
   function restErrorHandler(xhr, ajaxOptions, thrownError) {
     // Be warned - early attempts to catch other errors seems to interfere with CORS OPTIONS requests
-    if (xhr.status == 401) {
-      return CIPAPI.router.goTo('login'); // Unuauthorized!
+    if (xhr.status == 401 || !CIPAPI.credentials.areValid()) {
+      return CIPAPI.router.goTo('login', { action: 'unauthorized' }); // Unuauthorized!
     }
 
     // If 404 and 404 is allowed do not log an error
@@ -64,39 +72,53 @@
     }
 
     $(document).trigger('cipapi-rest-error', thrownError);
-
-    log.error(thrownError);
+    CIPAPI.stats.count(statsGroup, 'Total Errors');
+    log.error('(' + xhr.status + ') ' + xhr.responseText + ' -> ' + thrownError);
   }
+
+  // Is the REST engine idle?
+  CIPAPI.rest.isIdle = function() { return numTransactions == 0; }
   
+  // Encode the basic auth header
+  CIPAPI.rest.encodeBasicAuth = function(user, password) {
+    var tok = user + ':' + password;
+    var hash = btoa(tok);
+    return "Basic " + hash;
+  }
+
   // GET  
   CIPAPI.rest.GET = function(opts) {
-    if (!CIPAPI.credentials.areValid()) {
-      return CIPAPI.router.goTo('login');
-    }
+    $(document).trigger('cipapi-rest-active');
+    CIPAPI.stats.count(statsGroup, 'Total GET');
+    CIPAPI.stats.timestamp(statsGroup, 'Last Transaction');
+    numTransactions++;
     
     var credentials = CIPAPI.credentials.get();
-    
-    $.ajax({
+
+    return $.ajax({
       type: "GET",
       url: credentials.host + opts.url + '.js' + encodeApiParameters(opts),
       dataType: 'json',
       success: opts.success,
       complete: opts.complete,
-      headers: { "Authorization": encodeBasicAuth(credentials.user, credentials.pass) },
+      headers: { "Authorization": CIPAPI.rest.encodeBasicAuth(credentials.user, credentials.pass) },
       error: restErrorHandler,
       allow404: typeof opts.allow404 != 'undefined'
+    }).always(function() {
+      if (--numTransactions == 0) $(document).trigger('cipapi-rest-inactive');
     });
   }
   
   // post  
   CIPAPI.rest.post = function(opts) {
-    if (!CIPAPI.credentials.areValid()) {
-      return CIPAPI.router.goTo('login');
-    }
+    $(document).trigger('cipapi-rest-active');
+    CIPAPI.stats.count(statsGroup, 'Total POST');
+    CIPAPI.stats.timestamp(statsGroup, 'Last Transaction');
+    numTransactions++;
     
     var credentials = CIPAPI.credentials.get();
-    
-    $.ajax({
+
+    return $.ajax({
       type: "POST",
       processData: false, // Needed for ajax file upload
       contentType: false, // Needed for ajax file upload
@@ -105,9 +127,11 @@
       dataType: 'json',
       success: opts.success,
       complete: opts.complete,
-      headers: { "Authorization": encodeBasicAuth(credentials.user, credentials.pass) },
+      headers: { "Authorization": CIPAPI.rest.encodeBasicAuth(credentials.user, credentials.pass) },
       error: restErrorHandler,
       allow404: typeof opts.allow404 != 'undefined'
+    }).always(function() {
+      if (--numTransactions == 0) $(document).trigger('cipapi-rest-inactive');
     });
   }
   

@@ -26,6 +26,8 @@
 
   var log = log4javascript.getLogger("CIPAPI.main.single");
 
+  var lastShuffle = $.now();
+  
   // Global map references
   CIPAPI.main.single.map = null;
   
@@ -42,14 +44,14 @@
   });
 
   // On change interval pass the event into the update handler (if one exists)
-  $(document).on('cipapi-timer-tick', function(event, info) {
+  $(document).on('cipapi-timing-1sec', function(event, info) {
     // If paused, do nothing...
     if ($('a#view-layout-play span.glyphicon-pause').length > 0) {
       return;
     }
 
-    var desiredTick = undefined === CIPAPI.config.singleInterval ? 'cipapi-timing-5sec' : CIPAPI.config.singleInterval;
-    if (desiredTick != info) {
+    var timingEvent = undefined === CIPAPI.config.singleInterval ? 'cipapi-timing-5sec' : CIPAPI.config.singleInterval;
+    if (!CIPAPI.timing.shouldFire(lastShuffle, timingEvent)) {
       return; // Not the right time...
     }
     
@@ -61,6 +63,7 @@
     }
     
     showNext();
+    lastShuffle = $.now();
   });
 
   // Manual next and previous buttons

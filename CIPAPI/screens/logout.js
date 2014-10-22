@@ -25,6 +25,9 @@
   var log = log4javascript.getLogger("CIPAPI.logout");
 
   $(document).on('cipapi-handle-logout', function(event, info) {
+    log.debug("Firing pre-credential reset event on logout");
+    $(document).trigger('cipapi-pre-logout');
+    
     log.debug("Removing credentials and heading to login");
     CIPAPI.credentials.reset();
   });

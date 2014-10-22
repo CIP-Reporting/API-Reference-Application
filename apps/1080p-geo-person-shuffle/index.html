@@ -32,8 +32,8 @@
 
     <title>1080p Geo-spatial Person Shuffle</title>
 
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="../../res/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../../res/favicon.ico" type="image/x-icon" />
 
     <!-- Bootstrap CSS, then CIP, then customer provided -->
     <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -50,15 +50,15 @@
   <body>
     <div id="container">
       <div class="initializing">
-        <img src="./logo_mono_blue_thin.png" />
-        <img src="./progress-bar.gif" />
+        <img src="../../res/logo_mono_blue_thin.png" />
+        <img src="../../res/progress-bar.gif" />
         <p class="lead">Please wait, Initializing...</p>
       </div>
     </div>
     
     <!-- External librarys - jQuery, Bootstrap, log4javascript, etc. -->
     <script src="../../lib/jquery-2.0.3.js"></script>
-    <script src="../../lib/jquery-ui.js"></script>
+		<script src="../../lib/jquery-ui-1.11.2/jquery-ui.min.js"></script>
     <script src="../../lib/jquery.actual.js"></script>
     <script src="../../lib/jquery.image-scale.js"></script>
     <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
@@ -86,6 +86,7 @@
     <script src="../../CIPAPI/credentials.js"></script>
     <script src="../../CIPAPI/config.js"></script>
     <script src="../../CIPAPI/router.js"></script>
+    <script src="../../CIPAPI/stats.js"></script>
     <script src="../../CIPAPI/rest.js"></script>
     <script src="../../CIPAPI/timing.js"></script>
     <script src="../../CIPAPI/settings.js"></script>
@@ -109,6 +110,7 @@
     <script type="text/javascript">
       // Default Configurations - which can be overriden by an integration
       CIPAPI.config.setDefaults({
+            applicationVersion: '[APPVERSION]',                 // Set by the packaging script to know our own version
            overrideIntegration: '1080p-geo-person-shuffle-cfg', // Name of integration to request for configuration override / merge
         reloadSettingsInterval: 'cipapi-timing-5min',           // How often to reload settings from the server
               reloadMeInterval: 'cipapi-timing-5min',           // How often to reload the current user info from the server

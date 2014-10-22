@@ -28,14 +28,27 @@
   var isLoaded = false;
   
   function loadMe() {
+    if (!CIPAPI.credentials.areValid()) {
+      log.debug("No credentials, defering attempts to load");
+      return;
+    }
+
     log.debug("Loading me");
     CIPAPI.rest.GET({ 
       url: '/api/versions/current/facts/me', 
       success: function(response) { 
+        response.data.item[0].data.lastUpdated = $.now();
         CIPAPI.me = response.data.item[0].data;
         $(document).trigger('cipapi-me-set');
         log.debug("Me loaded");
         isLoaded = true;
+        
+        // Store the settings to local storage if so configured
+        if (CIPAPI.config.persistMe) {
+          var storageKey = 'CIPAPI.me.' + CIPAPI.credentials.getCredentialHash();
+          localStorage.setItem(storageKey, JSON.stringify(response.data.item[0].data));
+          log.debug("Me stored in local storage");
+        }
       },
       complete: function() {
         CIPAPI.router.validateMetadata();
@@ -51,22 +64,53 @@
     }
   });
   
-  // Attempt to reload current user information every 5 minutes unless another interval is specified (recommend cipapi-timing-never to disable completely)
-  $(document).on('cipapi-timer-tick', function(event, info) {
-    var desiredTick = undefined === CIPAPI.config.reloadMeInterval ? 'cipapi-timing-5min' : CIPAPI.config.reloadMeInterval;
-    if (desiredTick == info) {
+  // Attempt to reload myself every 5 minutes unless another interval is specified (recommend cipapi-timing-never to disable completely)
+  $(document).on('cipapi-timing-5sec', function(event, info) {
+    var timingEvent = undefined === CIPAPI.config.reloadMeInterval ? 'cipapi-timing-5min' : CIPAPI.config.reloadMeInterval;
+    if (CIPAPI.timing.shouldFire(CIPAPI.me.lastUpdated, timingEvent)) {
       loadMe();
     }
   });
-  
-  // Attempt to load current user information override on initialization if not disabled
-  $(document).on('cipapi-init', loadMe);
-  
+
   // When credentials change reload current user information if not disabled
   $(document).on('cipapi-credentials-set', function() {
-    isLoaded = false;
     CIPAPI.me = {};
+
+    // If currently NOT loaded AND local storage is enabled try and load me
+    // from local storage and do not load over the network if found.
+    if (!isLoaded && CIPAPI.config.persistMe) {
+      try {
+        var storageKey = 'CIPAPI.me.' + CIPAPI.credentials.getCredentialHash();
+        var storedMe = JSON.parse(localStorage.getItem(storageKey));
+        if (storedMe !== null && typeof storedMe === 'object') {
+          CIPAPI.me = storedMe;
+          log.debug("Me merged from local storage");
+
+          // Simulate full load
+          isLoaded = true;
+          $(document).trigger('cipapi-me-set');
+          CIPAPI.router.validateMetadata();
+
+          return; // Do no more!
+        }
+      } catch(e) {
+        log.error("Failed to load configuration from local storage");
+      }
+    }
+
+    isLoaded = false;
     loadMe();
   });
   
+  // When credentials are lost, reset our configuration
+  $(document).on('cipapi-credentials-reset', function() {
+    isLoaded = false;
+    CIPAPI.me = {};
+
+    // If backed by local storage delete the contents
+    if (CIPAPI.config.persistMe) {
+      localStorage.removeItem('CIPAPI.me.' + CIPAPI.credentials.getCredentialHash());
+      log.debug("Local storage cleared");
+    }
+  });
 })(window);

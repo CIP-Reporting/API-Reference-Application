@@ -33,7 +33,7 @@ function showHelp($err) {
   
   echo <<<EOD
 
-Usage: {$argv[0]} application destination
+Usage: {$argv[0]} application destination [alternate folder name]
 
 Where:
 
@@ -169,13 +169,14 @@ function recursiveCleanup($dir, $rmdir = false)
   if ($rmdir) rmdir($dir);
 }
 
-if ($argc !== 3) {
+if ($argc < 3) {
   showHelp("Invalid argument count");
 }
 
 $rootDir = realpath(dirname(__FILE__) . '/..');
 $appDir  = realpath($rootDir . "/apps/{$argv[1]}");
 $dstDir  = realpath($argv[2]);
+$dstFld  = $argc == 4 ? $argv[3] : $argv[1];
 
 if (false === $appDir) {
   showHelp("The specified application does not exist: {$argv[1]}");
@@ -189,7 +190,7 @@ if (!is_dir($dstDir)) {
   showHelp("The specified directory is not a directory: {$argv[2]}");
 }
 
-$dstDir .= "\\{$argv[1]}";
+$dstDir .= "\\$dstFld";
 
 if (file_exists($dstDir)) {
   echo "\nThe specified application is already packaged in the destination location:\n\n  $dstDir\n\n";
@@ -204,7 +205,7 @@ $version = (int)`svnversion`;
 if ($version == 0) {
   showHelp("Unable to extract SVN version number - you should run this script from the root of the reference application");
 }
-$version = '1.' . preg_replace("/\\D/", '', $version);
+$version = '1.0.' . preg_replace("/\\D/", '', $version);
 
 echo "\nExtracting metadata from application\n";
 $name   = extractMetaTagContent("$appDir\\index.html", "name");
@@ -228,7 +229,7 @@ if (false === $email) {
   showHelp("Required meta data does not exist: email");
 }
 
-$id = 'cip' . preg_replace("/\\W/", '', strtolower($name));
+$id = preg_replace("/\\W/", '', strtolower($name));
 echo "Version: $version\n";
 echo "ID: $id\n";
 echo "Name: $name\n";
@@ -236,7 +237,7 @@ echo "Description: $desc\n";
 echo "Author: $author\n";
 echo "Email: $email\n\n";
 
-echo "Packaging {$argv[1]} for Phonegap distribution\n\n";
+echo "Packaging $dstFld for Phonegap distribution\n\n";
 echo "Root Dir: $rootDir\n";
 echo "Appl Dir: $appDir\n";
 echo "Dest Dir: $dstDir\n\n";
@@ -256,6 +257,10 @@ echo "Copying lib... ";
 xcopy("$rootDir\\lib", "$dstDir\\lib");
 echo "[done]\n";
 
+echo "Copying res... ";
+xcopy("$rootDir\\res", "$dstDir\\res");
+echo "[done]\n";
+
 echo "Copying application... ";
 xcopy("$appDir", "$dstDir\\app");
 echo "[done]\n";
@@ -273,7 +278,11 @@ xcopy("$rootDir\\LICENSE", "$dstDir\\LICENSE");
 echo "[done]\n";
 
 echo "Copying icon.png... ";
-xcopy("$rootDir\\phonegap\\icon.png", "$dstDir\\icon.png");
+xcopy("$rootDir\\res\\icon.png", "$dstDir\\icon.png");
+echo "[done]\n";
+
+echo "Copying splash.png... ";
+xcopy("$rootDir\\res\\splash.png", "$dstDir\\splash.png");
 echo "[done]\n";
 
 echo "Copying config.xml... ";
@@ -295,9 +304,14 @@ if (file_exists("$dstDir\\app\\{$argv[1]}-config-pack.xml")) {
 echo "[done]\n";
 
 echo "Fixing paths... ";
-replaceInFile("$dstDir\\index.html", '"./',          '"./app/');
-replaceInFile("$dstDir\\index.html", '"../../',      '"./');
+replaceInFile("$dstDir\\index.html",     '"./',      '"./app/');
+replaceInFile("$dstDir\\index.html",     '"../../',  '"./');
+replaceInFile("$dstDir\\app\\style.css", '"../../',  '"../');
 replaceInFile("$dstDir\\CIPAPI\\components\\map.js", '"../../', '"./');
+echo "[done]\n";
+
+echo "Setting version... ";
+replaceInFile("$dstDir\\index.html", '[APPVERSION]', $version);
 echo "[done]\n";
 
 echo "Configuring Phonegap build... ";
@@ -308,6 +322,12 @@ replaceInFile("$dstDir\\config.xml", '[APPEMAIL]',   $email);
 replaceInFile("$dstDir\\config.xml", '[APPAUTHOR]',  $author);
 replaceInFile("$dstDir\\config.xml", '[APPVERSION]', $version);
 echo "[done]\n";
+
+if ($argc == 4) {
+  echo "Re-pathing resources for local build and emulation.. ";
+  replaceInFile("$dstDir\\config.xml", '"res/', '"www/res/');
+  echo "[done]\n";
+}
 
 echo "\nCleaning lib folder of unnecessary items\n";
 

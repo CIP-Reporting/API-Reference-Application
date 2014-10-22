@@ -64,7 +64,9 @@
 
       // Let someone else render the screen now
       $('body').attr('class', currHash);
+      $(document).trigger('cipapi-pre-handle', { hash: currHash, params: paramObj });
       $(document).trigger('cipapi-handle-' + currHash, { hash: currHash, params: paramObj });
+      $(document).trigger('cipapi-routed');
     }
 
     // If the hash is the same invoke the updater
@@ -73,7 +75,9 @@
 
       log.info("Invoking updater cipapi-update-" + currHash + ' (' + currParams + ')');
 
+      $(document).trigger('cipapi-pre-update', { hash: currHash, params: paramObj });
       $(document).trigger('cipapi-update-' + currHash, { hash: currHash, params: paramObj });
+      $(document).trigger('cipapi-routed');
     }
     
     hasRouted = true;
@@ -110,6 +114,19 @@
     
     if (window.location.hash == '#' + hash) CIPAPI.router.route(); // Force a route manually
     else window.location.hash = hash;
+  }
+
+  // A common way to see our current page handler
+  CIPAPI.router.getCurrentHandler = function() {
+    var components = window.location.hash.split('!');
+    return components.shift().replace(/^#/, '');
+  }
+  
+  // A common way to see our current page handler arguments
+  CIPAPI.router.getCurrentHandlerArguments = function() {
+    var components = window.location.hash.split('!');
+    components.shift();
+    return components;
   }
 
   // On application initialization force the initial route

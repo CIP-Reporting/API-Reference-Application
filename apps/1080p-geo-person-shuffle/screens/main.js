@@ -26,6 +26,7 @@
   var log = log4javascript.getLogger("CIPAPI.main");
 
   var firstShuffle = true;
+  var lastFired = $.now();
   
   // Navigating away from main, have my children clean up after themselves
   $(document).on('cipapi-unbind', function() {
@@ -51,26 +52,25 @@
   }
   
   // On change interval rotate the carousel (if one exists)
-  $(document).on('cipapi-timer-tick', function(event, info) {
+  $(document).on('cipapi-timing-1sec', function(event, info) {
     // If paused, do nothing...
     if ($('a#view-layout-play span.glyphicon-pause').length > 0) {
       return;
     }
-    
-    var desiredTick;
-    if (firstShuffle) {
-      desiredTick = undefined === CIPAPI.config.firstShuffleInterval ? 'cipapi-timing-5sec' : CIPAPI.config.firstShuffleInterval;
-      firstShuffle = false;
-    } else {
-      desiredTick = undefined === CIPAPI.config.shuffleInterval ? 'cipapi-timing-1min' : CIPAPI.config.shuffleInterval;
-    }
-    
-    if (desiredTick != info) {
-      return; // Not the right time...
-    }
 
+    var timingEvent;
+    if (firstShuffle) {
+      timingEvent = undefined === CIPAPI.config.firstShuffleInterval ? 'cipapi-timing-5sec' : CIPAPI.config.firstShuffleInterval;
+    } else {
+      timingEvent = undefined === CIPAPI.config.shuffleInterval ? 'cipapi-timing-1min' : CIPAPI.config.shuffleInterval;
+    }
+    
     // Shuffle it up!
-    $('a#shuffle-view-layout').click();
+    if (CIPAPI.timing.shouldFire(lastFired, timingEvent)) {
+      $('a#shuffle-view-layout').click();
+      firstShuffle = false;
+      lastFired = $.now();
+    }
   });
 
   $(document).on('cipapi-handle-main', function(event, info) {

@@ -25,7 +25,7 @@ body {
 }
 
 .navbar {
-  background-image: url(logo_mono_grey_thin.png);
+  background-image: url(../../res/logo_mono_grey_thin.png);
   background-position: 8px 8px;
   background-repeat: no-repeat;
   margin-bottom: 0px;

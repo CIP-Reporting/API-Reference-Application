@@ -26,6 +26,8 @@
 
   var log = log4javascript.getLogger("CIPAPI.main.tworow");
   
+  var lastShuffle = $.now();
+  
   // Global map references
   CIPAPI.main.tworow.map0 = null;
   CIPAPI.main.tworow.map1 = null;
@@ -49,14 +51,14 @@
   });
 
   // On change interval pass the event into the two row handler (if one exists)
-  $(document).on('cipapi-timer-tick', function(event, info) {
+  $(document).on('cipapi-timing-1sec', function(event, info) {
     // If paused, do nothing...
     if ($('a#view-layout-play span.glyphicon-pause').length > 0) {
       return;
     }
 
-    var desiredTick = undefined === CIPAPI.config.twoRowInterval ? 'cipapi-timing-10sec' : CIPAPI.config.twoRowInterval;
-    if (desiredTick != info) {
+    var timingEvent = undefined === CIPAPI.config.twoRowInterval ? 'cipapi-timing-10sec' : CIPAPI.config.twoRowInterval;
+    if (!CIPAPI.timing.shouldFire(lastShuffle, timingEvent)) {
       return; // Not the right time...
     }
     
@@ -68,6 +70,7 @@
     }
     
     showNext();
+    lastShuffle = $.now();
   });
 
   // Manual next and previous buttons
